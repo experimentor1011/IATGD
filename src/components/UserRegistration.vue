@@ -4,7 +4,7 @@ import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { useCurrentUser, useFirebaseAuth } from 'vuefire';
 
 //events
-const emit = defineEmits(['cancel']);
+const emit = defineEmits(['cancelregister','registrationcomplete']);
 
 
 //composables
@@ -29,18 +29,22 @@ function cancelUserRegistration(){
     registrationInfo.value.email = '';
     registrationInfo.value.password = '';
     registrationInfo.value.password_confirm = '';
-    emit('cancel');
+    emit('cancelregister');
 }
 
 //watchers
-watch(user,async(currentUser, previousUser)=>{
-    console.dir(currentUser);
+watch(user,async (currentUser, previousUser)=>{
+    if(currentUser && !previousUser){
+        emit('registrationcomplete');
+    }
 });
 
 </script>
 
 <template>
     <div class="box">
+
+        <h2 class="is-size-1 is-uppercase has-text-wieght-bold">Register</h2>
 
         <div class="field">
             <label class="label" for="email">Email</label>

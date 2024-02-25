@@ -6,6 +6,19 @@ import { RouterLink } from 'vue-router';
   <header>
 
   </header>
+
+  <section>
+    <div class="container is-max-desktop">
+      <h2 class="is-size-2 is-uppercase has-text-wieght-bold">You Can Take Your Party With You!</h2>
+      <div class="content">
+        Keep the party lit with the number one app designed for pop-up parties! Keep your party exclusive by setting a 
+        specific time to share your details and location to your invitees! Once your Pary start, enable "follow me" mode 
+        to share your location with ALL your party people so the party can follow you where-ever you go!  Ready to end the party?
+        Send the announcement to all of your invitees.
+      </div>
+    </div>
+  </section>
+
   <section>
     <div class="container is-max-desktop">
       <h2 class="is-size-2 is-uppercase has-text-wieght-bold">Create and Manage Your Pop-Up Party!</h2>

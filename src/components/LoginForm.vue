@@ -34,7 +34,7 @@ watch(user,async(currentUser, previousUser)=>{
 
 <template>
     <div class="box">
-        <h2 class="is-size-1 is-uppercase has-text-wieght-bold">Login</h2>
+        <h2 class="is-size-1 is-uppercase has-text-weight-bold">Login</h2>
 
         <div class="field">
             <label class="label" for="username">Username (Email Address)</label>

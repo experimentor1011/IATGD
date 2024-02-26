@@ -5,7 +5,9 @@ import { DateTime } from 'luxon';
 const props = defineProps( {
     userId: {
         type: String,
-        required: true
+        default: (()=>{
+            return ''
+        })
     }
 } );
 

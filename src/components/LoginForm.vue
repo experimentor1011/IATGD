@@ -1,11 +1,14 @@
 <script setup>
 import { ref, watch } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useCurrentUser, useFirebaseAuth } from 'vuefire';
 
 //composables
 const auth = useFirebaseAuth();
 const user = useCurrentUser();
+const route = useRoute();
+const router = useRouter();
 
 //component properties
 const loginInfo = ref({username:'',password:''});
@@ -24,9 +27,8 @@ async function login(){
 
 //watchers
 watch(user,async(currentUser, previousUser)=>{
-    if(currentUser){
-        console.log('User Signed In');
-        console.dir(currentUser);
+    if(currentUser) {
+        router.push({name:'main'});
     }
 });
 

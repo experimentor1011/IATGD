@@ -33,7 +33,7 @@ const eventInfo = ref( {
                 <input class="input" name="eventname" v-model="eventInfo.name" type="text" placeholder="My Lit Party!"/>
             </div>
         </div>
-
+        <!--
         <div class="field">
             <label class="label" for="eventdate">Event Date</label>
             <div class="control">
@@ -47,5 +47,6 @@ const eventInfo = ref( {
                 This Event Is Private
             </label>
         </div>
+        -->
     </div>
 </template>

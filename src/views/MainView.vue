@@ -22,16 +22,16 @@ const eventList = ref([]);
 </script>
 
 <template>
-    <div v-if="displayEventForm" class="modal">
+    <header>
+        <MainNavigation></MainNavigation>
+    </header>
+    <div v-bind:class="{ 'modal':true, 'is-active':displayEventForm }">
         <div class="modal-background"></div>
         <div class="modal-content">
             <EventForm v-bind:user-id="userId"></EventForm>
         </div>
         <button class="modal-close is-large" aria-label="close" v-on:click="displayEventForm = false"></button>
     </div>
-    <header>
-        <MainNavigation></MainNavigation>
-    </header>
     <section>
         <div class="container is-max-desktop">
             <div class="columns">

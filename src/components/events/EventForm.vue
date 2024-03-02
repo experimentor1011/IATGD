@@ -27,6 +27,9 @@ const GEOCODING_KEY = 'AIzaSyCKP5fYA_yjsuNxZzEZOZsDMw20JSrOvys';
 const has_address_list = computed(()=> {
     return !!address_list.value && address_list.value.length > 0;
 });
+const has_err_mess = computed(() => {
+    return !!err_mess.value && err_mess.value.length > 0;
+})
 
 /**
  * component properties for dislpay and functionality
@@ -46,6 +49,7 @@ const eventInfo = ref( {
 const selectedFormStage = ref('step1');
 //Geocode search address list
 const address_list = ref([]);
+const err_mess = ref('');
 
 /**
  * General functions used to provide app functionality 
@@ -75,6 +79,9 @@ async function lookupAddress(){
     try {
         let lookupResponse = await axios(requestConfig);
         console.dir(lookupResponse.data);
+        if(lookupResponse.data.status === 'ZERO_RESULTS') {
+            err_mess.value = 'could not find this address. Please try again.';
+        }
         let tempAddressArray = lookupResponse.data.results.map( addrInfo => {
             return { address: addrInfo.formatted_address, location:addrInfo.geometry.location, place_id : addrInfo.place_id };
         });
@@ -84,9 +91,13 @@ async function lookupAddress(){
         console.dir(e);
     }
 }
+function handleLocationSelection(event){
+    console.dir(event.target.selectedOptions[0].value);
+}
 function resetLookup(){
     address_list.value = [];
     eventInfo.value.address = '';
+    err_mess.value = '';
 }
 </script>
 
@@ -133,10 +144,12 @@ function resetLookup(){
                 <div class="control">
                     <input v-if="!has_address_list" class="input" type="text" name="eventaddress" v-model="eventInfo.address" placeholder="Enter Address"/>
                     <div v-if="has_address_list" class="select">
-                        <select>
-                            <option v-for="addr in address_list" v-bind:key="addr.place_id" value="addr.address">{{ addr.address }}</option>
+                        <select v-on:change="handleLocationSelection">
+                            <option value="">Pick Address</option>
+                            <option v-for="addr in address_list" v-bind:key="addr.place_id" v-bind:value="addr.place_id">{{ addr.address }}</option>
                         </select>
                     </div>
+                    <p v-if="has_err_mess" class="help is-danger">{{ err_mess }}</p>
                 </div>
                 <div class="control">
                     <a class="button is-info" v-on:click="lookupAddress">Lookup</a>

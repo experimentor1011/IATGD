@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, onBeforeMount, ref } from 'vue';
 import { DateTime } from 'luxon';
 import axios from 'axios';
 
@@ -29,7 +29,7 @@ const has_address_list = computed(()=> {
 });
 const has_err_mess = computed(() => {
     return !!err_mess.value && err_mess.value.length > 0;
-})
+});
 
 /**
  * component properties for dislpay and functionality
@@ -38,6 +38,7 @@ const has_err_mess = computed(() => {
 const eventInfo = ref( { 
     name: '', 
     address: '',
+    place_id: '',
     date: DateTime.now().toFormat('yyyy-MM-dd'),
     time: DateTime.now().toFormat('T'), 
     ownerId: props.userId, 
@@ -45,12 +46,13 @@ const eventInfo = ref( {
     isLocationPublic: true, 
     isDatePublic: true 
 } );
-//the step to display in the 'New Event Form'
+//the step Metropolisto display in the 'New Event Form'
 const selectedFormStage = ref('step1');
 //Geocode search address list
 const address_list = ref([]);
 const err_mess = ref('');
-
+const geoMapCenter = ref({lat:0.0,lng:0.0});
+const geoMapZoom = ref(7);
 /**
  * General functions used to provide app functionality 
  */
@@ -86,6 +88,12 @@ async function lookupAddress(){
             return { address: addrInfo.formatted_address, location:addrInfo.geometry.location, place_id : addrInfo.place_id };
         });
         address_list.value = tempAddressArray;
+        //auto-assign the first address coming back
+        if(has_address_list.value){
+            eventInfo.value.address = address_list.value[0].address
+            eventInfo.value.place_id = address_list.value[0].place_id;
+        }
+        
     } catch(e) {
         console.log('There was an error:');
         console.dir(e);
@@ -99,6 +107,13 @@ function resetLookup(){
     eventInfo.value.address = '';
     err_mess.value = '';
 }
+
+onBeforeMount(()=>{
+    navigator.geolocation.getCurrentPosition((position)=>{
+        let coords = {lat:position.coords.latitude,lng:position.coords.longitude};
+        geoMapCenter.value = coords;
+    });
+})
 </script>
 
 <template>
@@ -145,7 +160,6 @@ function resetLookup(){
                     <input v-if="!has_address_list" class="input" type="text" name="eventaddress" v-model="eventInfo.address" placeholder="Enter Address"/>
                     <div v-if="has_address_list" class="select">
                         <select v-on:change="handleLocationSelection">
-                            <option value="">Pick Address</option>
                             <option v-for="addr in address_list" v-bind:key="addr.place_id" v-bind:value="addr.place_id">{{ addr.address }}</option>
                         </select>
                     </div>
@@ -158,6 +172,7 @@ function resetLookup(){
                     <a class="button is-danger" v-on:click="resetLookup">Reset</a>
                 </div>
             </div>
+            <GMapMap map-type-id="roadmap" v-bind:zoom="geoMapZoom" v-bind:center="geoMapCenter" style="width:100%; height:30vh;"></GMapMap>
             <div class="field is-grouped">
                 <a class="button is-warning mr-2" v-on:click="selectedFormStage = 'step1'">Back</a>
                 <a class="button is-link" v-on:click="selectedFormStage = 'step3'">Next</a>

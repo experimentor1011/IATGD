@@ -43,8 +43,8 @@ const eventInfo = ref( {
     time: DateTime.now().toFormat('T'), 
     ownerId: props.userId, 
     isEventPrivate: false, 
-    isLocationPublic: true, 
-    isDatePublic: true 
+    isLocationPrivate: true, 
+    isDatePrivate: true 
 } );
 //the step Metropolisto display in the 'New Event Form'
 const selectedFormStage = ref('step1');
@@ -52,18 +52,28 @@ const selectedFormStage = ref('step1');
 const address_list = ref([]);
 const err_mess = ref('');
 const geoMapCenter = ref({lat:0.0,lng:0.0});
-const geoMapZoom = ref(7);
+const geoMapZoom = ref(15);
 /**
  * General functions used to provide app functionality 
  */
+
+function logEventData(evt){
+    console.log('Log Event Data.');
+    console.dir(evt);
+}
 
 /**
  * fucntion used to get the value of the 'Is Private event' checkbox and save it to the object used to store event info
  * @param {HtmlNode} element 
  */
-function setIsEvent(element){
-    console.log('Element checked value: %s',JSON.stringify(element,null,"\t"));
-    eventInfo.value.isEventPrivate = element.value;
+function setEventVisibility(evt){
+    eventInfo.value.isEventPrivate = evt.target.checked;
+}
+function setDateVisibility(evt){
+    eventInfo.value.isDatePrivate = evt.target.checked;
+}
+function setLocationVisibility(evt){
+    eventInfo.value.isLocationPrivate = evt.target.checked;
 }
 /**
  * function used to lookup the address and provide back a list of geocoding addresses that match.
@@ -85,13 +95,15 @@ async function lookupAddress(){
             err_mess.value = 'could not find this address. Please try again.';
         }
         let tempAddressArray = lookupResponse.data.results.map( addrInfo => {
-            return { address: addrInfo.formatted_address, location:addrInfo.geometry.location, place_id : addrInfo.place_id };
+            return { address: addrInfo.formatted_address, location:addrInfo.geometry.location, place_id : addrInfo.place_id,
+                coords: addrInfo.geometry.location };
         });
         address_list.value = tempAddressArray;
         //auto-assign the first address coming back
         if(has_address_list.value){
             eventInfo.value.address = address_list.value[0].address
             eventInfo.value.place_id = address_list.value[0].place_id;
+            geoMapCenter.value = address_list.value[0].coords;
         }
         
     } catch(e) {
@@ -142,8 +154,16 @@ onBeforeMount(()=>{
             <div class="field">
                 <label class="checkbox">
                     <div class="control">
-                        <input type="checkbox" v-bind:checked="eventInfo.isEventPrivate" v-on:change="setIsEvent($event)"/>
+                        <input type="checkbox" v-bind:checked="eventInfo.isEventPrivate" v-on:change="setEventVisibility($event)"/>
                         This Event Is Private
+                    </div>
+                </label>
+            </div>
+            <div class="field">
+                <label class="checkbox">
+                    <div class="control">
+                        <input type="checkbox" v-bind:checked="eventInfo.isDatePrivate" v-on:change="setDateVisibility($event)"/>
+                        Hide Date Until Last Minute
                     </div>
                 </label>
             </div>
@@ -172,7 +192,15 @@ onBeforeMount(()=>{
                     <a class="button is-danger" v-on:click="resetLookup">Reset</a>
                 </div>
             </div>
-            <GMapMap map-type-id="roadmap" v-bind:zoom="geoMapZoom" v-bind:center="geoMapCenter" style="width:100%; height:30vh;"></GMapMap>
+            <GMapMap map-type-id="roadmap" v-bind:zoom="geoMapZoom" v-bind:center="geoMapCenter" style="width:100%; height:30vh;">
+                <GMapMarker v-bind:position="geoMapCenter"></GMapMarker>
+            </GMapMap>
+            <div class="field">
+                <label class="control">
+                    <input type="checkbox" v-bind:checked="eventInfo.isLocationPrivate" v-on:change="setLocationVisibility($event)"/>
+                    Hide the Location until event time 
+                </label>
+            </div>
             <div class="field is-grouped">
                 <a class="button is-warning mr-2" v-on:click="selectedFormStage = 'step1'">Back</a>
                 <a class="button is-link" v-on:click="selectedFormStage = 'step3'">Next</a>

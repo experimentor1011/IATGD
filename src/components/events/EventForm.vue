@@ -193,7 +193,7 @@ onBeforeMount(()=>{
                 </div>
             </div>
             <GMapMap map-type-id="roadmap" v-bind:zoom="geoMapZoom" v-bind:center="geoMapCenter" style="width:100%; height:30vh;">
-                <GMapMarker v-bind:position="geoMapCenter"></GMapMarker>
+                <GMapMarker v-bind:position="geoMapCenter" draggable="true"></GMapMarker>
             </GMapMap>
             <div class="field">
                 <label class="control">

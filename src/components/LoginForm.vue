@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useCurrentUser, useFirebaseAuth } from 'vuefire';
@@ -7,11 +7,16 @@ import { useCurrentUser, useFirebaseAuth } from 'vuefire';
 //composables
 const auth = useFirebaseAuth();
 const user = useCurrentUser();
-const route = useRoute();
 const router = useRouter();
 
 //component properties
 const loginInfo = ref({username:'',password:''});
+const errMess = ref('');
+
+//computed properties
+const hasErrMess = computed(()=>{
+    return !!errMess.value && errMess.value.trim().length > 0;
+});
 
 //functions
 async function login(){
@@ -21,12 +26,13 @@ async function login(){
          console.dir(userCreds);
     } catch(e) {
         console.log('there was a problem signing the user in.');
-        console.dir(e);
+        errMess.value = e.message;
+        console.dir(e.code);
     }
 }
 
 //watchers
-watch(user,async(currentUser, previousUser)=>{
+watch(user,async(currentUser)=>{
     if(currentUser) {
         router.push({name:'main'});
     }
@@ -50,6 +56,7 @@ watch(user,async(currentUser, previousUser)=>{
             <div class="control">
                 <input class="input" name="password" type="password" placeholder="Password" v-model="loginInfo.password"/>
             </div>
+            <p v-if="hasErrMess" class="help is-danger">{{ errMess }}</p>
         </div>
 
         <div class="field is-grouped">

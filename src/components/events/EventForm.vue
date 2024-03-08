@@ -2,6 +2,8 @@
 import { computed, onBeforeMount, ref } from 'vue';
 import { DateTime } from 'luxon';
 import axios from 'axios';
+import { firebaseApp } from '../../utils/firebaseApp';
+import { useFirestore } from 'vuefire';
 
 //external component properties
 const props = defineProps( {
@@ -20,6 +22,9 @@ const props = defineProps( {
 const GEOCODING_URL = 'https://maps.googleapis.com';
 //Google API Key used for Geocoding and Places API
 const GEOCODING_KEY = 'AIzaSyCKP5fYA_yjsuNxZzEZOZsDMw20JSrOvys';
+const db = useFirestore(firebaseApp);
+
+
 
 /**
  * computed properties

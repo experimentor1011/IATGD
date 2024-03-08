@@ -37,7 +37,7 @@
             </div>
         </div>
         <div v-if="showRegistration">
-            <UserRegistration></UserRegistration>
+            <UserRegistration v-on:registrationcomplete="showRegistration = false"></UserRegistration>
             <div class="container has-text-centered">
                 <a class="button is-text" v-on:click="showRegistration = false">Login</a>
             </div>

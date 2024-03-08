@@ -2,8 +2,9 @@
 import { computed, onBeforeMount, ref } from 'vue';
 import { DateTime } from 'luxon';
 import axios from 'axios';
-import { firebaseApp } from '../../utils/firebaseApp';
 import { useFirestore } from 'vuefire';
+import { collection, addDoc } from '@firebase/firestore';
+
 
 //external component properties
 const props = defineProps( {
@@ -22,8 +23,8 @@ const props = defineProps( {
 const GEOCODING_URL = 'https://maps.googleapis.com';
 //Google API Key used for Geocoding and Places API
 const GEOCODING_KEY = 'AIzaSyCKP5fYA_yjsuNxZzEZOZsDMw20JSrOvys';
-const db = useFirestore(firebaseApp);
-
+const firestoreApp = useFirestore();
+const eventCollection = collection(firestoreApp,'events');
 
 
 /**
@@ -124,7 +125,18 @@ function resetLookup(){
     eventInfo.value.address = '';
     err_mess.value = '';
 }
-
+async function createEvent(){
+    try {
+        let result = await addDoc(eventCollection,eventInfo.value);
+        console.log('Data Write Result');
+        logEventData(result);
+    } catch(e) {
+        logEventData(e);
+    }
+}
+/**
+ * Lifecycle Methods
+ */
 onBeforeMount(()=>{
     navigator.geolocation.getCurrentPosition((position)=>{
         let coords = {lat:position.coords.latitude,lng:position.coords.longitude};
@@ -198,7 +210,7 @@ onBeforeMount(()=>{
                 </div>
             </div>
             <GMapMap map-type-id="roadmap" v-bind:zoom="geoMapZoom" v-bind:center="geoMapCenter" style="width:100%; height:30vh;">
-                <GMapMarker v-bind:position="geoMapCenter" draggable="true"></GMapMarker>
+                <GMapMarker v-bind:position="geoMapCenter"></GMapMarker>
             </GMapMap>
             <div class="field">
                 <label class="control">
@@ -208,9 +220,13 @@ onBeforeMount(()=>{
             </div>
             <div class="field is-grouped">
                 <a class="button is-warning mr-2" v-on:click="selectedFormStage = 'step1'">Back</a>
-                <a class="button is-link" v-on:click="selectedFormStage = 'step3'">Next</a>
+                <a class="button is-link" v-on:click="createEvent">Create Event</a>
             </div>
         </div>
         <!--END: Step 2 Form Fields-->
+
+        <!--BEGIN: Step 3 Form Fields-->
+
+        <!--END: Step 3 Form Fields-->
     </div>
 </template>

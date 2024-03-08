@@ -16,7 +16,6 @@ const userId = computed(()=>{
 
 //component properties
 const displayEventForm = ref(false);
-const eventList = ref([]);
 
 
 </script>

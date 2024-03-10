@@ -22,7 +22,7 @@ const props = defineProps( {
 //Google URL used for Geocoding Address typed in
 const GEOCODING_URL = 'https://maps.googleapis.com';
 //Google API Key used for Geocoding and Places API
-const GEOCODING_KEY = 'AIzaSyCKP5fYA_yjsuNxZzEZOZsDMw20JSrOvys';
+const GEOCODING_KEY = import.meta.env.VITE_GOOGLE_APIKEY;
 const firestoreApp = useFirestore();
 const eventCollection = collection(firestoreApp,'events');
 
@@ -226,7 +226,8 @@ onBeforeMount(()=>{
         <!--END: Step 2 Form Fields-->
 
         <!--BEGIN: Step 3 Form Fields-->
-
+        <div v-if="selectedFormStage === 'step3'">
+        </div>
         <!--END: Step 3 Form Fields-->
     </div>
 </template>

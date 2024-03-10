@@ -29,9 +29,7 @@ const router = createRouter({
 });
 
 //setup navigation guards
-router.beforeEach(async ( to, from ) => {
-  console.log('router.beforeEach executed.');
-  console.dir(to);
+router.beforeEach(async ( to, _ ) => {
   if(to.meta.requiresAuth){
     var currentUser;
     try {
@@ -39,10 +37,7 @@ router.beforeEach(async ( to, from ) => {
     } catch(e) {
       console.log('THere was an error getting the current user');
     }
-    console.log('Current User');
-    console.dir(currentUser);
     if(!currentUser){
-      console.log('Current user info: %s',JSON.stringify(currentUser,null,"\t"));
       return { name:'login', query: { redirect: to.fullPath } };
     }
   }
